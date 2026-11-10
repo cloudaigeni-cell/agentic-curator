@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Curator 3D Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a drafting table. One isometric model of the system on the left that you
+   can turn and pull apart; a run-through of the pipeline on the right that lifts the
+   parts in play. Reference material sits below in plain columns. */
+:root {
+  --paper: #eef2f6;
+  --panel: #ffffff;
+  --ink: #14233a;
+  --muted: #5a6b82;
+  --line: #cfd8e3;
+  --orch: #1f3a66;      /* orchestrator */
+  --agent: #17806f;     /* subagents */
+  --service: #64748b;   /* shared services */
+  --mcp: #2f6fd0;       /* protocol boundary */
+  --store: #a58a5c;     /* the library */
+  --gate: #d98a0b;      /* policy gate */
+  --danger: #c2412d;    /* the one agent that can remove */
+  --face-text: #ffffff;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1622; --panel: #17202e; --ink: #e6edf5; --muted: #93a3b8; --line: #2a3648;
+    --orch: #4a78c4; --agent: #23a893; --service: #7b8ba3; --mcp: #4b8bef;
+    --store: #b89a66; --gate: #eaa022; --danger: #e0604a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1622; --panel: #17202e; --ink: #e6edf5; --muted: #93a3b8; --line: #2a3648;
+  --orch: #4a78c4; --agent: #23a893; --service: #7b8ba3; --mcp: #4b8bef;
+  --store: #b89a66; --gate: #eaa022; --danger: #e0604a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.55 var(--body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(30px, 4.4vw, 44px); letter-spacing: -0.01em; }
+h2 { font-size: 24px; }
+h3 { font-size: 17px; }
+p { margin: 0; }
+.lead { max-width: 68ch; color: var(--muted); font-size: 17px; }
+code, pre, .mono { font-family: var(--mono); font-size: 13px; }
+code { background: color-mix(in srgb, var(--ink) 8%, transparent); padding: 1px 5px; border-radius: 4px; }
+header { display: flex; flex-direction: column; gap: 10px; }
+.kicker { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mcp); }
+
+/* ---------- the model ---------- */
+.bench { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+@media (max-width: 900px) { .bench { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.stage { position: relative; overflow: hidden; min-height: 620px; display: flex; flex-direction: column; }
+.viewport { position: relative; flex: 1; min-height: 530px; overflow: hidden; touch-action: pan-y; cursor: grab;
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 28px 28px;
+  background-color: color-mix(in srgb, var(--panel) 70%, var(--paper)); }
+.viewport:active { cursor: grabbing; }
+.scene { position: absolute; left: 50%; top: 70%; width: 0; height: 0; transform-style: preserve-3d;
+  transform: scale(var(--s, 1)) rotateX(58deg) rotateZ(calc(var(--rz, -38) * 1deg)); transition: transform .25s ease; }
+.block { position: absolute; transform-style: preserve-3d; cursor: pointer;
+  transform: translate3d(calc(var(--x) * 1px), calc(var(--y) * 1px), calc(var(--layer) * var(--gap, 78) * 1px + var(--lift, 0px)));
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s; }
+.block .f { position: absolute; left: 0; top: 0; border: 1px solid color-mix(in srgb, var(--c) 55%, #000); }
+.block .top { width: calc(var(--w) * 1px); height: calc(var(--d) * 1px); background: var(--c);
+  transform: translateZ(calc(var(--h) * 1px)); color: var(--face-text); display: flex; flex-direction: column;
+  justify-content: center; padding: 6px 10px; font: 700 15px/1.1 var(--display); letter-spacing: .01em; }
+.block .top small { font: 500 10.5px/1.25 var(--mono); opacity: .85; margin-top: 3px; }
+.block .front { width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); top: calc(var(--d) * 1px);
+  transform-origin: top; transform: rotateX(-90deg) translateY(calc(var(--h) * -1px));
+  background: color-mix(in srgb, var(--c) 78%, #000); }
+.block .right { width: calc(var(--h) * 1px); height: calc(var(--d) * 1px); left: calc(var(--w) * 1px);
+  transform-origin: left; transform: rotateY(90deg) translateX(calc(var(--h) * -1px));
+  background: color-mix(in srgb, var(--c) 62%, #000); }
+.block .left { width: calc(var(--h) * 1px); height: calc(var(--d) * 1px);
+  transform-origin: left; transform: rotateY(90deg) translateX(calc(var(--h) * -1px));
+  background: color-mix(in srgb, var(--c) 62%, #000); }
+.block .back { width: calc(var(--w) * 1px); height: calc(var(--h) * 1px);
+  transform-origin: top; transform: rotateX(-90deg) translateY(calc(var(--h) * -1px));
+  background: color-mix(in srgb, var(--c) 78%, #000); }
+.block.plate .top { background: color-mix(in srgb, var(--c) 4%, transparent); color: var(--muted);
+  border-style: dashed; justify-content: flex-end; font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.block.plate { pointer-events: none; }
+.block.plate .f:not(.top) { display: none; }
+.scene.focus .block:not(.plate):not(.on) { opacity: .22; }
+.block.on { --lift: 18px; }
+.block.sel .top { outline: 3px solid var(--ink); outline-offset: -3px; }
+.block:focus-visible .top { outline: 3px solid var(--gate); outline-offset: -3px; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 22px; padding: 12px 16px; border-top: 1px solid var(--line); align-items: center; }
+.controls label { display: flex; align-items: center; gap: 8px; font: 500 12px var(--mono); color: var(--muted); }
+.controls input[type=range] { width: 130px; accent-color: var(--mcp); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 10px 16px 0; font: 500 12px var(--mono); color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+/* ---------- the run-through ---------- */
+.side { display: flex; flex-direction: column; }
+.phases { display: flex; flex-wrap: wrap; gap: 6px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+button { font: inherit; color: inherit; }
+.phases button, .btn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 12px;
+  font: 600 12px var(--mono); cursor: pointer; }
+.phases button[aria-pressed=true] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.btn.primary { background: var(--mcp); border-color: var(--mcp); color: #fff; }
+button:focus-visible { outline: 2px solid var(--gate); outline-offset: 2px; }
+.detail { padding: 16px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.detail .tag { align-self: flex-start; font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 4px; color: #fff; background: var(--tagc, var(--service)); }
+.detail p { max-width: 62ch; }
+.detail dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+.detail dt { color: var(--muted); font: 500 12px var(--mono); padding-top: 2px; }
+.detail dd { margin: 0; }
+pre { margin: 0; padding: 12px 14px; border-radius: 8px; overflow-x: auto; line-height: 1.5;
+  background: #0d1420; color: #d6e2f0; border: 1px solid #22304a; }
+pre .c { color: #7f93ad; } pre .k { color: #7fd1c2; } pre .w { color: #f0b54a; }
+
+/* ---------- reference ---------- */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.tile { padding: 16px; display: flex; flex-direction: column; gap: 8px; border-left: 4px solid var(--edge, var(--line)); }
+.tile .n { font: 600 12px var(--mono); color: var(--muted); }
+.tile p { font-size: 14.5px; color: var(--muted); }
+.tile p b { color: var(--ink); font-weight: 600; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
+.scroll { overflow-x: auto; }
+section { display: flex; flex-direction: column; gap: 14px; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; }
+.pad { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+@media (prefers-reduced-motion: reduce) { .scene, .block { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kicker">agentic-curator · field guide</span>
+    <h1>One orchestrator, six specialists, one protocol boundary</h1>
+    <p class="lead">A working multi-agent system you can turn over in your hands. Drag the model to rotate it, pull the layers apart, then step through a real run and watch which parts lift. Every block maps to one Python file in the repository.</p>
+  </header>
+
+  <div class="bench">
+    <div class="card stage">
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--orch)"></i>orchestration</span>
+        <span><i style="background:var(--agent)"></i>subagents</span>
+        <span><i style="background:var(--danger)"></i>may remove files</span>
+        <span><i style="background:var(--gate)"></i>policy gate</span>
+        <span><i style="background:var(--service)"></i>shared services</span>
+        <span><i style="background:var(--mcp)"></i>MCP</span>
+        <span><i style="background:var(--store)"></i>your files</span>
+      </div>
+      <div class="viewport" id="viewport"><div class="scene" id="scene"></div></div>
+      <div class="controls">
+        <label for="rot">rotate <input id="rot" type="range" min="-80" max="-10" value="-38"></label>
+        <label for="gap">pull apart <input id="gap" type="range" min="46" max="130" value="78"></label>
+        <button class="btn" id="reset" type="button">show all</button>
+      </div>
+    </div>
+
+    <div class="card side">
+      <div class="phases" id="phases" role="group" aria-label="Pipeline phases"></div>
+      <div class="detail" id="detail" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Five locks between an agent and your files</h2>
+    <p class="lead">None of them depends on a model behaving well. Each is a few lines of ordinary code you can read and test.</p>
+    <div class="grid">
+      <div class="card tile" style="--edge:var(--gate)"><span class="n">LOCK 1 · policy.py</span><h3>Dry run unless you say otherwise</h3><p>Without <code>--execute</code> the policy refuses every change. The demo's first run only writes a plan.</p></div>
+      <div class="card tile" style="--edge:var(--agent)"><span class="n">LOCK 2 · messages.py</span><h3>Finders cannot act</h3><p>Agents emit <b>proposals with evidence</b>: a matching hash, a similarity score. Only the deletion agent may act, and it proposes nothing.</p></div>
+      <div class="card tile" style="--edge:var(--gate)"><span class="n">LOCK 3 · policy.py</span><h3>The token is the plan</h3><p>Approval is a hash of the exact targets. Add one path after review and the token no longer matches, so the whole batch is refused.</p></div>
+      <div class="card tile" style="--edge:var(--mcp)"><span class="n">LOCK 4 · library_server.py</span><h3>No delete tool exists</h3><p>The server offers <code>move_to_trash</code> and nothing stronger. A manifest records each original path; <code>curator restore</code> undoes it.</p></div>
+      <div class="card tile" style="--edge:var(--mcp)"><span class="n">LOCK 5 · library_server.py</span><h3>A real sandbox</h3><p>Every path is resolved against the library root. <code>../../etc/passwd</code> is rejected by the server, whatever a document tells an agent to do.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Practical labs</h2>
+    <p class="lead">Do these in order. Each takes ten to twenty minutes and changes one thing, so you can see its effect in the trace.</p>
+    <div class="card scroll">
+      <table>
+        <thead><tr><th>#</th><th>Lab</th><th>What you do</th><th>What you learn</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Watch a run</td><td><code>curator demo</code>, then read <code>runs/*/trace.jsonl</code></td><td>How one task becomes twelve, and who ran each</td></tr>
+          <tr><td>2</td><td>Speak MCP by hand</td><td><code>curator tools --library demo_library</code>, then open the server in the MCP Inspector</td><td>Tool discovery and a raw JSON-RPC call, no agent involved</td></tr>
+          <tr><td>3</td><td>Break the sandbox</td><td>Ask <code>read_text</code> for <code>../../etc/passwd</code></td><td>Where the security boundary is, and that it holds</td></tr>
+          <tr><td>4</td><td>Tamper with a plan</td><td>Run <code>pytest tests/test_policy.py -k changed_plan</code>, then edit the test</td><td>Why approval must bind to content</td></tr>
+          <tr><td>5</td><td>Add a tool</td><td>Write <code>count_words</code> in the server with one decorator</td><td>Typed Python function to MCP schema, automatically</td></tr>
+          <tr><td>6</td><td>Add a seventh agent</td><td>A <code>LargeFileAgent</code> that proposes review for files over 50 MB</td><td>Routing by task kind; nothing else changes</td></tr>
+          <tr><td>7</td><td>Plug in a model</td><td>Set <code>CURATOR_PROVIDER</code> and a key, rerun, compare subject keys</td><td>Where a model adds judgement, and where code must keep measuring</td></tr>
+          <tr><td>8</td><td>Swap the server</td><td>Point the registry at a Google Drive MCP server</td><td>Agents know tool names, not storage systems</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Start here</h2>
+    <div class="two">
+      <div class="card pad">
+        <h3>In WSL (Ubuntu)</h3>
+<pre><span class="c"># one-time</span>
+sudo apt update &amp;&amp; sudo apt install -y python3-venv git
+git clone https://github.com/cloudaigeni-cell/agentic-curator
+cd agentic-curator
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e ".[dev]"
+
+<span class="c"># check, then run on planted sample data</span>
+curator doctor
+curator demo            <span class="c"># plan only</span>
+curator demo <span class="w">--execute</span>  <span class="c"># moves 8 files to trash</span>
+curator restore --library demo_library</pre>
+      </div>
+      <div class="card pad">
+        <h3>Choose who answers</h3>
+        <div class="scroll">
+        <table>
+          <thead><tr><th>Provider</th><th>What you set</th></tr></thead>
+          <tbody>
+            <tr><td>offline (default)</td><td>nothing. Deterministic code answers.</td></tr>
+            <tr><td>anthropic</td><td><code>ANTHROPIC_API_KEY</code></td></tr>
+            <tr><td>gemini, API key</td><td><code>GOOGLE_API_KEY</code></td></tr>
+            <tr><td>gemini, Google credentials</td><td><code>gcloud auth application-default login</code> and <code>GOOGLE_GENAI_USE_VERTEXAI=true</code></td></tr>
+            <tr><td>openai or local</td><td><code>OPENAI_API_KEY</code>, optional <code>OPENAI_BASE_URL</code> for Ollama</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p style="color:var(--muted);font-size:14.5px">The demo gives the same plan with every provider. A model refines subject names and reviews the plan; it never measures and never approves.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---- the parts ---- x,y = position on the floor; w,d = footprint; h = height; layer = storey */
+const C = { orch:'var(--orch)', agent:'var(--agent)', service:'var(--service)', mcp:'var(--mcp)', store:'var(--store)', gate:'var(--gate)', danger:'var(--danger)' };
+const BLOCKS = [
+  { id:'orchestrator', layer:4, x:-150, y:-70, w:200, d:110, h:34, c:C.orch, label:'Orchestrator', sub:'owns the plan', kind:'orchestration',
+    file:'agents/orchestrator.py', does:'Inventories the library, creates one task per year, sequences the specialists, and sends every proposal through the policy gate. It never touches a file. Its output is a plan.',
+    io:'pipeline.run in, plan + approval token out', tryit:'curator agents' },
+  { id:'bus', layer:4, x:70, y:-70, w:130, d:110, h:22, c:C.orch, label:'Agent bus', sub:'routes by task kind', kind:'orchestration',
+    file:'core/bus.py', does:'A routing table from task kind to agent, plus bounded concurrency. gather() is what runs four year-agents at once. There is no agent-to-agent chat: if two agents must cooperate, the orchestrator orders them.',
+    io:'TaskSpec in, AgentResult out', tryit:'curator agents   # prints the routing table' },
+
+  { id:'year', layer:3, x:-290, y:-120, w:120, d:86, h:30, c:C.agent, label:'Year agent', sub:'one per year', kind:'subagent',
+    file:'agents/year_agent.py', does:'Handed one year\'s files, it fingerprints each with SHA-256 over MCP and reports counts and size. A fresh instance is created per year, so 2019 failing cannot stop 2022.',
+    io:'year.analyse', tryit:'grep year- runs/*/trace.jsonl' },
+  { id:'document', layer:3, x:-150, y:-120, w:120, d:86, h:30, c:C.agent, label:'Document agent', sub:'text + PDF', kind:'subagent',
+    file:'agents/document_agent.py', does:'Extracts text from documents and PDFs, then assigns a subject key. Code produces a key first; a model may improve it; code checks the answer before using it.',
+    io:'doc.extract', tryit:'CURATOR_PROVIDER=anthropic curator demo --fresh' },
+  { id:'duplicate', layer:3, x:-10, y:-120, w:120, d:86, h:30, c:C.agent, label:'Duplicate finder', sub:'sha256 + Jaccard', kind:'subagent',
+    file:'agents/duplicate_agent.py', does:'Identical bytes become a delete proposal at confidence 1.00. Text that is 80% similar becomes a merge candidate instead, because near-identical is a judgement, not a proof.',
+    io:'dup.documents', tryit:'pytest tests/test_tools.py -k similarity' },
+  { id:'photo', layer:3, x:130, y:-120, w:120, d:86, h:30, c:C.agent, label:'Photo finder', sub:'perceptual hash', kind:'subagent',
+    file:'agents/photo_agent.py', does:'Compares 64-bit perceptual fingerprints. Up to 4 differing bits is the same shot. 5 to 10 bits is the same scene a moment later, which goes to a human, never to the trash.',
+    io:'dup.photos', tryit:'pytest tests/test_tools.py -k dhash' },
+  { id:'consolidator', layer:3, x:-220, y:-16, w:150, d:86, h:30, c:C.agent, label:'Consolidator', sub:'merge, read back, verify', kind:'subagent',
+    file:'agents/consolidator_agent.py', does:'Writes one curated file per subject, reads it back through MCP, and confirms every source is present before proposing to retire the sources. PDFs are never merged away.',
+    io:'consolidate.subjects', tryit:'cat demo_library/curated/meeting-notes.md' },
+  { id:'deletion', layer:3, x:-50, y:-16, w:150, d:86, h:30, c:C.danger, label:'Deletion agent', sub:'the only one that acts', kind:'may remove files',
+    file:'agents/deletion_agent.py', does:'Checks dry-run, the approval token and protected paths, then calls move_to_trash. It is the only agent allowed to remove anything and it cannot propose removals itself.',
+    io:'delete.execute', tryit:'curator demo --execute && curator restore --library demo_library' },
+
+  { id:'blackboard', layer:2, x:-290, y:-70, w:130, d:120, h:24, c:C.service, label:'Blackboard', sub:'shared memory', kind:'shared service',
+    file:'core/blackboard.py', does:'Agents never call each other. They read and write here, and every write is logged with its author. That log is how you trace a deletion proposal back to the measurement behind it.',
+    io:'records, texts, proposals', tryit:'cat runs/*/blackboard.json' },
+  { id:'policy', layer:2, x:-145, y:-70, w:130, d:120, h:40, c:C.gate, label:'Policy gate', sub:'vet · token · authorise', kind:'policy gate',
+    file:'core/policy.py', does:'Rejects low-confidence, protected or survivor-less deletions, caps batch size, and issues the approval token. The gate is plain code, so it holds even when a model is wrong.',
+    io:'proposals in, approved plan out', tryit:'pytest tests/test_policy.py -v' },
+  { id:'llm', layer:2, x:0, y:-70, w:130, d:120, h:24, c:C.service, label:'LLM provider', sub:'offline · Claude · Gemini · OpenAI', kind:'shared service',
+    file:'llm/providers.py', does:'One interface, four backends. json() always returns a dict: if the model is missing or replies with nonsense, the caller\'s deterministic fallback is used and the trace says so.',
+    io:'prompt in, dict out', tryit:'curator doctor' },
+  { id:'client', layer:2, x:145, y:-70, w:130, d:120, h:24, c:C.mcp, label:'MCP client', sub:'session per server', kind:'MCP',
+    file:'mcp_layer/client.py', does:'Starts each server, performs the handshake, discovers its tools, and keeps the session open for the whole run. Agents call tools by name and know nothing about storage.',
+    io:'initialize, tools/list, tools/call', tryit:'curator tools --library demo_library' },
+
+  { id:'server', layer:1, x:-250, y:-60, w:500, d:100, h:26, c:C.mcp, label:'MCP server · curator-library', sub:'8 tools over stdio · JSON-RPC 2.0 · sandboxed to one folder', kind:'MCP',
+    file:'mcp_layer/servers/library_server.py', does:'The only code that touches files. Tools: list_items, stat_item, read_text, hash_item, image_signature, write_text, move_to_trash, trash_manifest. Replace it with a Drive server and the agents keep working.',
+    io:'tool call in, structured result out', tryit:'python -m agentic_curator.mcp_layer.servers.library_server --root demo_library' },
+
+  { id:'docs', layer:0, x:-290, y:-60, w:130, d:100, h:20, c:C.store, label:'documents/', sub:'txt · md · pdf', kind:'your files',
+    file:'(your library)', does:'Text and PDF files. Read through read_text, fingerprinted through hash_item.', io:'read only', tryit:'ls demo_library/documents' },
+  { id:'photos', layer:0, x:-145, y:-60, w:130, d:100, h:20, c:C.store, label:'photos/', sub:'jpg · png', kind:'your files',
+    file:'(your library)', does:'Images. Reached only through image_signature, which returns a fingerprint and dimensions, never the pixels.', io:'read only', tryit:'ls demo_library/photos' },
+  { id:'curated', layer:0, x:0, y:-60, w:130, d:100, h:20, c:C.store, label:'curated/', sub:'merged files', kind:'your files',
+    file:'(written by the consolidator)', does:'One merged Markdown file per subject, each section headed with the original path, size and date so a merge can be undone by hand.', io:'write_text', tryit:'ls demo_library/curated' },
+  { id:'trash', layer:0, x:145, y:-60, w:130, d:100, h:20, c:C.store, label:'.curator_trash/', sub:'reversible', kind:'your files',
+    file:'(written by move_to_trash)', does:'Retired files and manifest.jsonl, which maps each one to its original path. Nothing here is gone until you empty it yourself.', io:'move_to_trash', tryit:'curator restore --library demo_library' },
+];
+const PLATES = [
+  { layer:4, label:'4 · orchestration' }, { layer:3, label:'3 · subagents' }, { layer:2, label:'2 · shared services' },
+  { layer:1, label:'1 · protocol boundary' }, { layer:0, label:'0 · your files' },
+];
+const PHASES = [
+  { key:'0 scope', title:'Scope the library', on:['orchestrator','client','server','docs','photos'],
+    text:'The orchestrator makes a single MCP call. Everything after this works from the inventory it returns.',
+    trace:'[orchestrator] phase 0 · inventory\n[mcp]   orchestrator -> library.list_items\n[orchestrator] 18 files across 4 year(s)  years=2019,2020,2021,2022' },
+  { key:'1 fan out', title:'One subagent per year', on:['orchestrator','bus','year','client','server','blackboard','docs','photos'],
+    text:'Four tasks, four fresh agent instances, run concurrently. Each hashes its own slice and publishes records to the blackboard.',
+    trace:'[agent] year-2019: start year.analyse\n[agent] year-2020: start year.analyse\n[agent] year-2021: start year.analyse\n[agent] year-2022: start year.analyse\n[agent] year-2019: 4 files, 0.03 MB  photos=2 docs=2' },
+  { key:'2 read', title:'Text and PDF', on:['bus','document','llm','client','server','blackboard','docs'],
+    text:'Documents are read once and given a subject key. With no API key the deterministic key stands; with one, the model may refine it.',
+    trace:'[agent] doc-2021: start doc.extract\n[mcp]   doc-2021 -> library.read_text  path=documents/migration_notes_2021.txt\n[agent] doc-2021: done doc.extract  ms=23.7' },
+  { key:'3 compare', title:'Find duplicates', on:['bus','duplicate','photo','client','server','blackboard','photos'],
+    text:'Two specialists run side by side. Neither removes anything. Each files proposals carrying the numbers that justify them.',
+    trace:'[agent] duplicate-finder: 2 identical group(s), 1 near-identical\n[mcp]   photo-finder -> library.image_signature\n[agent] photo-finder: 2 duplicate set(s), 1 to review' },
+  { key:'4 merge', title:'Consolidate by subject', on:['bus','consolidator','client','server','blackboard','curated','docs'],
+    text:'Same-subject notes become one file. The agent reads its own output back and only then proposes retiring the sources.',
+    trace:'[mcp]   consolidator -> library.write_text  path=curated/meeting-notes.md\n[mcp]   consolidator -> library.read_text   path=curated/meeting-notes.md\n[agent] consolidator: 2 subject file(s) written, 0 not trusted' },
+  { key:'5 vet', title:'Through the gate', on:['orchestrator','policy','blackboard','llm'],
+    text:'Every proposal is checked against the policy. What survives is hashed into an approval token. A dry run stops here.',
+    trace:'[orchestrator] phase 6 · policy review\n[orchestrator] plan: 6 delete group(s), 8 file(s)  token=1c2d0d0a264837fc\n[orchestrator] model review: caution  source=fallback' },
+  { key:'6 act', title:'Execute, reversibly', on:['bus','deletion','policy','client','server','trash'],
+    text:'Only with --execute. The deletion agent re-checks the token, then moves each file to the trash and records where it came from.',
+    trace:'[policy] authorised 8 file(s) in 6 group(s)\n[mcp]   deletion-agent -> library.move_to_trash\n[policy] moved 8 file(s) to trash, refused 0' },
+];
+
+const scene = document.getElementById('scene'), detail = document.getElementById('detail'), phasesEl = document.getElementById('phases');
+const esc = s => s.replace(/[&<>]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[ch]));
+function cube(b, plate) {
+  const el = document.createElement(plate ? 'div' : 'button');
+  el.className = 'block' + (plate ? ' plate' : '');
+  if (!plate) { el.type = 'button'; el.style.background = 'none'; el.style.border = '0'; el.style.padding = '0'; el.style.textAlign = 'left'; el.setAttribute('aria-label', b.label + ': ' + b.sub); }
+  for (const k of ['x','y','w','d','h','layer']) el.style.setProperty('--' + k, b[k]);
+  el.style.setProperty('--c', b.c);
+  el.innerHTML = '<span class="f back"></span><span class="f left"></span><span class="f right"></span><span class="f front"></span>' +
+    '<span class="f top">' + esc(b.label) + (b.sub ? '<small>' + esc(b.sub) + '</small>' : '') + '</span>';
+  return el;
+}
+PLATES.forEach(p => scene.appendChild(cube({ x:-310, y:-140, w:620, d:230, h:0, layer:p.layer, c:'var(--ink)', label:p.label, sub:'' }, true)));
+const nodes = {};
+BLOCKS.forEach(b => { const el = cube(b, false); nodes[b.id] = el; el.addEventListener('click', e => { if (dragged) return; select(b.id); }); scene.appendChild(el); });
+
+let current = -1;
+function showPhase(i) {
+  current = i;
+  [...phasesEl.children].forEach((btn, n) => btn.setAttribute('aria-pressed', String(n === i)));
+  Object.values(nodes).forEach(n => n.classList.remove('on', 'sel'));
+  if (i < 0) { scene.classList.remove('focus'); overview(); return; }
+  const p = PHASES[i];
+  scene.classList.add('focus');
+  p.on.forEach(id => nodes[id].classList.add('on'));
+  detail.style.setProperty('--tagc', 'var(--orch)');
+  detail.innerHTML = '<span class="tag">phase ' + esc(p.key) + '</span><h2>' + esc(p.title) + '</h2><p>' + esc(p.text) + '</p>' +
+    '<dl><dt>in play</dt><dd>' + p.on.map(id => esc(BLOCKS.find(b => b.id === id).label)).join(' · ') + '</dd></dl>' +
+    '<pre>' + esc(p.trace) + '</pre>' +
+    '<p style="color:var(--muted);font-size:14px">Lines above are from a real <code>curator demo</code> run. Click any lifted block to open its file.</p>';
+}
+function select(id) {
+  const b = BLOCKS.find(x => x.id === id);
+  Object.values(nodes).forEach(n => n.classList.remove('sel'));
+  nodes[id].classList.add('sel');
+  detail.style.setProperty('--tagc', b.c);
+  detail.innerHTML = '<span class="tag">' + esc(b.kind) + '</span><h2>' + esc(b.label) + '</h2><p>' + esc(b.does) + '</p>' +
+    '<dl><dt>file</dt><dd><code>src/agentic_curator/' + esc(b.file) + '</code></dd><dt>handles</dt><dd>' + esc(b.io) + '</dd></dl>' +
+    '<pre><span class="c"># try it</span>\n' + esc(b.tryit) + '</pre>';
+}
+function overview() {
+  detail.style.setProperty('--tagc', 'var(--mcp)');
+  detail.innerHTML = '<span class="tag">how to read this</span><h2>Five storeys, top to bottom</h2>' +
+    '<p>Work flows down and results flow up. The orchestrator plans, subagents do one job each, shared services hold memory and rules, and a single MCP server is the only thing that reaches your files.</p>' +
+    '<dl><dt>agents</dt><dd>7 classes, 12 tasks in the demo run</dd><dt>MCP calls</dt><dd>41 in the demo run, all through one session</dd><dt>tests</dt><dd>17, including a real server process</dd><dt>needs</dt><dd>Python 3.11+, no API key</dd></dl>' +
+    '<p style="color:var(--muted);font-size:14px">Pick a phase above, or click a block.</p>';
+}
+PHASES.forEach((p, i) => { const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = p.key; btn.setAttribute('aria-pressed', 'false'); btn.addEventListener('click', () => showPhase(current === i ? -1 : i)); phasesEl.appendChild(btn); });
+
+/* ---- turning the model ---- */
+const rot = document.getElementById('rot'), gap = document.getElementById('gap'), viewport = document.getElementById('viewport');
+rot.addEventListener('input', () => scene.style.setProperty('--rz', rot.value));
+gap.addEventListener('input', () => scene.style.setProperty('--gap', gap.value));
+document.getElementById('reset').addEventListener('click', () => showPhase(-1));
+let dragged = false, startX = 0, startRot = 0, down = false;
+viewport.addEventListener('pointerdown', e => { down = true; dragged = false; startX = e.clientX; startRot = Number(rot.value); });
+window.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - startX; if (Math.abs(dx) > 5) dragged = true;
+  if (dragged) { rot.value = Math.max(-80, Math.min(-10, startRot + dx * 0.25)); scene.style.setProperty('--rz', rot.value); scene.style.transition = 'none'; } });
+window.addEventListener('pointerup', () => { down = false; scene.style.transition = ''; setTimeout(() => { dragged = false; }, 0); });
+function fit() { scene.style.setProperty('--s', Math.min(0.86, viewport.clientWidth / 760)); }
+window.addEventListener('resize', fit); fit();
+showPhase(-1);
+</script>
+</body>
+</html>

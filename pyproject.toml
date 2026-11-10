@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentic-curator"
+version = "0.1.0"
+description = "A hands-on multi-agent framework: one orchestrator, many specialised subagents, all tool access over MCP."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "cloudaigeni-cell" }]
+keywords = ["agents", "mcp", "orchestrator", "llm", "wsl"]
+
+# Deliberately small. The framework runs end-to-end with ONLY these.
+dependencies = [
+    "mcp>=2.0.0",       # the official Model Context Protocol SDK (client + server)
+    "pillow>=10.0.0",   # perceptual hashing of photos
+    "pypdf>=4.0.0",     # PDF text extraction
+]
+
+[project.optional-dependencies]
+# Pick the one you actually pay for. None of them are required for the demo.
+anthropic = ["anthropic>=0.40.0"]
+gemini = ["google-genai>=0.3.0"]
+openai = ["openai>=1.40.0"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.6"]
+all = ["anthropic>=0.40.0", "google-genai>=0.3.0", "openai>=1.40.0", "pytest>=8.0", "pytest-asyncio>=0.23"]
+
+[project.scripts]
+curator = "agentic_curator.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentic_curator"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
