@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Curator Visual 3D Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a build manual. Eleven plates, one per stage, each an isometric model you can
+   turn, with the numbered steps, the real trace and the command to run beside it. */
+:root {
+  --paper: #eef2f6; --panel: #ffffff; --ink: #14233a; --muted: #5a6b82; --line: #cfd8e3;
+  --orch: #1f3a66; --agent: #17806f; --service: #64748b; --mcp: #2f6fd0; --store: #a58a5c;
+  --gate: #d98a0b; --danger: #c2412d; --data: #dbe4ef; --data-ink: #14233a;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", sans-serif;
+  --body: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1622; --panel: #17202e; --ink: #e6edf5; --muted: #93a3b8; --line: #2a3648;
+    --orch: #4a78c4; --agent: #23a893; --service: #7b8ba3; --mcp: #4b8bef; --store: #b89a66;
+    --gate: #eaa022; --danger: #e0604a; --data: #3a4a62; --data-ink: #e6edf5; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1622; --panel: #17202e; --ink: #e6edf5; --muted: #93a3b8; --line: #2a3648;
+  --orch: #4a78c4; --agent: #23a893; --service: #7b8ba3; --mcp: #4b8bef; --store: #b89a66;
+  --gate: #eaa022; --danger: #e0604a; --data: #3a4a62; --data-ink: #e6edf5; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 16px/1.55 var(--body); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px 72px; display: flex; flex-direction: column; gap: 30px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(30px, 4.4vw, 44px); }
+h2 { font-size: 26px; }
+h3 { font: 600 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+p { margin: 0; }
+.lead { max-width: 68ch; color: var(--muted); font-size: 17px; }
+code, pre { font-family: var(--mono); font-size: 13px; }
+code { background: color-mix(in srgb, var(--ink) 8%, transparent); padding: 1px 5px; border-radius: 4px; }
+.kicker { font: 600 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mcp); }
+header { display: flex; flex-direction: column; gap: 10px; }
+nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); margin: 0 -20px; padding: 10px 20px;
+  display: flex; gap: 6px; overflow-x: auto; }
+nav a { flex: none; text-decoration: none; color: var(--ink); border: 1px solid var(--line); background: var(--panel);
+  border-radius: 999px; padding: 4px 12px; font: 600 12px var(--mono); }
+nav a:hover { border-color: var(--mcp); }
+a:focus-visible { outline: 2px solid var(--gate); outline-offset: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 500 12px var(--mono); color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+.plate { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+@media (max-width: 920px) { .plate { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.head { display: flex; flex-direction: column; gap: 6px; }
+.num { font: 600 12px var(--mono); color: #fff; background: var(--tone, var(--orch)); align-self: flex-start;
+  padding: 2px 9px; border-radius: 4px; letter-spacing: .06em; text-transform: uppercase; }
+section { display: flex; flex-direction: column; gap: 14px; }
+.notes { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.notes ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+.notes ol b { font-weight: 600; }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0; font-size: 14px; }
+.facts dt { color: var(--muted); font: 500 12px var(--mono); padding-top: 2px; }
+.facts dd { margin: 0; }
+pre { margin: 0; padding: 11px 13px; border-radius: 8px; overflow-x: auto; line-height: 1.5;
+  background: #0d1420; color: #d6e2f0; border: 1px solid #22304a; }
+pre .c { color: #7f93ad; }
+.check { border-left: 4px solid var(--agent); padding: 8px 12px; font-size: 14.5px;
+  background: color-mix(in srgb, var(--agent) 9%, transparent); border-radius: 0 8px 8px 0; }
+
+/* ---------- isometric engine ---------- */
+.viewport { position: relative; min-height: 430px; height: 100%; overflow: hidden; border-radius: 12px; touch-action: pan-y; cursor: grab;
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 28px 28px;
+  background-color: color-mix(in srgb, var(--panel) 70%, var(--paper)); }
+.viewport:active { cursor: grabbing; }
+.hint { position: absolute; right: 10px; bottom: 8px; font: 500 11px var(--mono); color: var(--muted); pointer-events: none; }
+.scene { position: absolute; left: 50%; top: var(--top, 58%); width: 0; height: 0; transform-style: preserve-3d;
+  transform: scale(var(--s, .8)) rotateX(57deg) rotateZ(calc(var(--rz, -36) * 1deg)); }
+.block { position: absolute; left: 0; top: 0; transform-style: preserve-3d;
+  transform: translate3d(calc(var(--x) * 1px), calc(var(--y) * 1px), calc(var(--z) * 1px)); }
+.block .f { position: absolute; left: 0; top: 0; border: 1px solid color-mix(in srgb, var(--c) 55%, #000); }
+.block .top { width: calc(var(--w) * 1px); height: calc(var(--d) * 1px); background: var(--c);
+  transform: translateZ(calc(var(--h) * 1px)); color: #fff; display: flex; flex-direction: column; justify-content: center;
+  padding: 5px 8px; font: 700 15px/1.1 var(--display); overflow: hidden; }
+.block .top small { font: 500 10.5px/1.25 var(--mono); opacity: .9; margin-top: 3px; }
+.block .front { width: calc(var(--w) * 1px); height: calc(var(--h) * 1px); top: calc(var(--d) * 1px);
+  transform-origin: top; transform: rotateX(-90deg) translateY(calc(var(--h) * -1px)); background: color-mix(in srgb, var(--c) 78%, #000); }
+.block .right { width: calc(var(--h) * 1px); height: calc(var(--d) * 1px); left: calc(var(--w) * 1px);
+  transform-origin: left; transform: rotateY(90deg) translateX(calc(var(--h) * -1px)); background: color-mix(in srgb, var(--c) 62%, #000); }
+.block .left { width: calc(var(--h) * 1px); height: calc(var(--d) * 1px);
+  transform-origin: left; transform: rotateY(90deg) translateX(calc(var(--h) * -1px)); background: color-mix(in srgb, var(--c) 62%, #000); }
+.block .back { width: calc(var(--w) * 1px); height: calc(var(--h) * 1px);
+  transform-origin: top; transform: rotateX(-90deg) translateY(calc(var(--h) * -1px)); background: color-mix(in srgb, var(--c) 78%, #000); }
+.block.light .top { color: var(--data-ink); }
+.block.base .top { justify-content: flex-end; font: 600 11px var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  background: color-mix(in srgb, var(--c) 30%, var(--panel)); color: var(--ink); }
+.block.base .f:not(.top) { background: color-mix(in srgb, var(--c) 45%, var(--panel)); }
+.block.pipe { opacity: .8; }
+.arrow { position: absolute; left: 0; top: -2.5px; height: 5px; width: calc(var(--len) * 1px); background: var(--c); transform-origin: 0 50%;
+  transform: translate3d(calc(var(--x) * 1px), calc(var(--y) * 1px), calc(var(--z) * 1px)) rotateZ(calc(var(--ang) * 1deg)); }
+.arrow::after { content: ""; position: absolute; right: -2px; top: -5.5px; border: 8px solid transparent; border-left: 13px solid var(--c); border-right: 0; }
+.arrow span { position: absolute; left: 4px; bottom: 8px; white-space: nowrap; font: 600 10.5px var(--mono); color: var(--ink);
+  background: color-mix(in srgb, var(--panel) 85%, transparent); padding: 0 4px; border-radius: 3px; }
+.arrow i { position: absolute; left: 0; top: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--c);
+  box-shadow: 0 0 0 2px var(--panel); animation: run 2.4s linear infinite; }
+@keyframes run { to { transform: translateX(calc(var(--len) * 1px - 14px)); } }
+@media (prefers-reduced-motion: reduce) { .arrow i { animation: none; display: none; } html { scroll-behavior: auto; } }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.tile { padding: 14px; display: flex; flex-direction: column; gap: 6px; border-left: 4px solid var(--edge, var(--line)); }
+.tile b { font: 700 16px var(--display); }
+.tile p { font-size: 14px; color: var(--muted); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 12px var(--mono); color: var(--muted); }
+.scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kicker">agentic-curator · build manual</span>
+    <h1>The whole program, one plate per phase</h1>
+    <p class="lead">Eleven 3D diagrams take you from an empty WSL terminal to a reviewed, reversible clean-up. Each plate shows the parts in play, the numbered steps, the trace lines a real run prints, and the command that lets you see it yourself. Drag any model to turn it.</p>
+    <div class="legend" aria-hidden="true">
+      <span><i style="background:var(--orch)"></i>orchestration</span>
+      <span><i style="background:var(--agent)"></i>subagent / code</span>
+      <span><i style="background:var(--danger)"></i>removal</span>
+      <span><i style="background:var(--gate)"></i>check or gate</span>
+      <span><i style="background:var(--service)"></i>shared service</span>
+      <span><i style="background:var(--mcp)"></i>MCP</span>
+      <span><i style="background:var(--store)"></i>files</span>
+      <span><i style="background:var(--data)"></i>data in flight</span>
+    </div>
+  </header>
+
+  <nav aria-label="Plates">
+    <a href="#map">Map</a><a href="#setup">A Setup</a><a href="#wiring">B Wiring</a><a href="#scope">0 Scope</a>
+    <a href="#fanout">1 Fan out</a><a href="#read">2 Read</a><a href="#compare">3 Compare</a><a href="#photos">4 Photos</a>
+    <a href="#merge">5 Merge</a><a href="#vet">6 Vet</a><a href="#act">7 Act</a><a href="#reports">8 Reports</a>
+  </nav>
+
+  <section id="map">
+    <div class="head"><span class="num" style="--tone:var(--mcp)">Map</span><h2>Five storeys: work flows down, results flow up</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="map" style="--top:66%"></div></div>
+      <div class="card notes">
+        <h3>How to read every plate</h3>
+        <ol>
+          <li><b>Storey 4</b> plans. The orchestrator and the bus never touch a file.</li>
+          <li><b>Storey 3</b> does one job per agent. Only the red one may remove anything.</li>
+          <li><b>Storey 2</b> holds memory, rules, the model and the MCP client.</li>
+          <li><b>Storey 1</b> is the protocol boundary: one MCP server, eight tools.</li>
+          <li><b>Storey 0</b> is your library. Nothing reaches it except through storey 1.</li>
+        </ol>
+        <dl class="facts">
+          <dt>one run</dt><dd>12 agent tasks, 41 MCP calls, about half a second on the sample</dd>
+          <dt>sample</dt><dd>18 files across 2019 to 2022, with planted duplicates</dd>
+          <dt>result</dt><dd>6 delete groups, 8 files, all moved to a reversible trash</dd>
+        </dl>
+        <div class="scroll"><table>
+          <thead><tr><th>Phase</th><th>Agent</th><th>Task kind</th></tr></thead>
+          <tbody>
+            <tr><td>0 Scope</td><td>Orchestrator</td><td><code>pipeline.run</code></td></tr>
+            <tr><td>1 Fan out</td><td>Year agent × 4</td><td><code>year.analyse</code></td></tr>
+            <tr><td>2 Read</td><td>Document agent</td><td><code>doc.extract</code></td></tr>
+            <tr><td>3 Compare</td><td>Duplicate finder</td><td><code>dup.documents</code></td></tr>
+            <tr><td>4 Photos</td><td>Photo finder</td><td><code>dup.photos</code></td></tr>
+            <tr><td>5 Merge</td><td>Consolidator</td><td><code>consolidate.subjects</code></td></tr>
+            <tr><td>6 Vet</td><td>Orchestrator + policy</td><td>no task: a function call</td></tr>
+            <tr><td>7 Act</td><td>Deletion agent</td><td><code>delete.execute</code></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="setup">
+    <div class="head"><span class="num" style="--tone:var(--service)">Plate A · before any agent runs</span><h2>Where everything lives on your machine</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="setup"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li><b>Windows</b> hosts WSL. Install Ubuntu once with <code>wsl --install -d Ubuntu</code>.</li>
+          <li><b>Ubuntu</b> holds the repository and a Python 3.11+ virtual environment.</li>
+          <li><b>curator</b> is the command you run. It starts the <b>MCP server</b> as a child process and talks to it over stdio.</li>
+          <li>The <b>library</b> is any folder: <code>~/library</code>, a Windows path under <code>/mnt/c</code>, or Drive for desktop mounted at <code>/mnt/g</code>.</li>
+          <li>The <b>LLM API</b> is optional. With no key the offline provider answers.</li>
+        </ol>
+<pre><span class="c"># inside Ubuntu</span>
+sudo apt install -y python3-venv git
+cd agentic-curator
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e ".[dev]"
+curator doctor</pre>
+        <div class="check"><b>You should see:</b> Python, MCP SDK, Pillow and pypdf all OK, and "offline always available".</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="wiring">
+    <div class="head"><span class="num">Plate B · runtime.py</span><h2>Wiring: seven agents on one bus, one MCP handshake</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="wiring" style="--top:54%"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li><code>build_runtime()</code> creates the five shared services: tracer, blackboard, policy gate, LLM provider, MCP client.</li>
+          <li>Each agent <b>registers the task kinds it handles</b>. Two agents claiming one kind is an error at startup.</li>
+          <li>Year and document agents register as <b>factories</b>, so every task gets a fresh instance.</li>
+          <li>The MCP client launches the server, sends <code>initialize</code>, then <code>tools/list</code>, and learns the eight tools.</li>
+        </ol>
+<pre>[info] registered orchestrator      handles=pipeline.run
+[info] registered duplicate-finder  handles=dup.documents
+[info] registered photo-finder      handles=dup.photos
+[info] registered consolidator      handles=consolidate.subjects
+[info] registered deletion-agent    handles=delete.execute
+[info] registered factory for year.analyse
+[mcp]  connected 'library' (curator-library)  tools=8</pre>
+        <dl class="facts"><dt>files</dt><dd><code>runtime.py</code>, <code>core/bus.py</code>, <code>mcp_layer/client.py</code></dd><dt>try</dt><dd><code>curator agents</code> and <code>curator tools --library demo_library</code></dd></dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="scope">
+    <div class="head"><span class="num">Phase 0 · scope</span><h2>One MCP call inventories the library</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="scope"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li>The orchestrator asks the MCP client to call <code>list_items</code>.</li>
+          <li>The server walks the library and returns path, size, kind and a <b>year</b> for each file.</li>
+          <li>Year comes from the filename first (<code>IMG_20190704…</code>, <code>report_2021</code>), then the modified time.</li>
+          <li>The orchestrator sorts the 18 items into four piles, one per year.</li>
+        </ol>
+<pre>[orchestrator] phase 0 · inventory
+[mcp]   orchestrator -> library.list_items
+[orchestrator] 18 files across 4 year(s)  years=2019,2020,2021,2022</pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/orchestrator.py</code>, <code>tools/content.py</code> (<code>year_hint</code>)</dd><dt>MCP calls</dt><dd>1</dd></dl>
+        <div class="check"><b>Check yourself:</b> the piles are 4, 5, 5 and 4 files.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fanout">
+    <div class="head"><span class="num" style="--tone:var(--agent)">Phase 1 · fan out</span><h2>One subagent per year, running at the same time</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="fanout" style="--top:64%"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li>The orchestrator creates four <code>year.analyse</code> tasks, each carrying its own slice of files.</li>
+          <li><code>bus.gather()</code> runs them concurrently, up to four in flight.</li>
+          <li>Each year agent calls <code>hash_item</code> for its files and gets a SHA-256 back.</li>
+          <li>Each writes its records and a summary to the blackboard. No agent sees another year.</li>
+        </ol>
+<pre>[agent] year-2019: start year.analyse
+[agent] year-2020: start year.analyse
+[agent] year-2021: start year.analyse
+[agent] year-2022: start year.analyse
+[mcp]   year-2019 -> library.hash_item  path=documents/invoice_2019_march.txt
+[agent] year-2019: 4 files, 0.03 MB  photos=2 docs=2</pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/year_agent.py</code>, <code>core/bus.py</code> (<code>gather</code>)</dd><dt>MCP calls</dt><dd>18, one per file</dd></dl>
+        <div class="check"><b>Why split by year:</b> a corrupt file in one year fails one task, and the trace shows which year cost the time.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="read">
+    <div class="head"><span class="num" style="--tone:var(--agent)">Phase 2 · read</span><h2>Text and PDF: code proposes, the model may refine, code checks</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="read"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li>A document agent per year calls <code>read_text</code>. The server parses PDFs with pypdf.</li>
+          <li>Code derives a <b>subject key</b> from the filename: years, months and "copy/v2" are stripped.</li>
+          <li>If a model is configured it is asked for a better key, with the code's answer as fallback.</li>
+          <li>The answer is checked (2 to 60 characters) before it is stored.</li>
+          <li>Texts and subjects go to the blackboard for phases 3 and 5.</li>
+        </ol>
+<pre>[agent] doc-2022: start doc.extract
+[mcp]   doc-2022 -> library.read_text  path=documents/meeting_notes_2022_jan.txt
+[agent] doc-2022: done doc.extract  ms=14.2</pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/document_agent.py</code>, <code>llm/base.py</code> (<code>json</code> + fallback)</dd><dt>MCP calls</dt><dd>10, one per document</dd></dl>
+        <div class="check"><b>Check yourself:</b> <code>meeting_notes_2022_jan.txt</code> and <code>…_feb.txt</code> both get the key "meeting notes".</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <div class="head"><span class="num" style="--tone:var(--agent)">Phase 3 · compare</span><h2>Duplicate documents: proof on one lane, judgement on the other</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="compare"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li><b>Lane 1, identical bytes.</b> Files sharing a SHA-256 form a group. The oldest stays; the rest become a delete proposal at confidence 1.00.</li>
+          <li><b>Lane 2, similar text.</b> Texts are cut into 5-word shingles and compared by Jaccard similarity.</li>
+          <li>At 0.80 or more the pair becomes a <b>merge candidate</b>, never a delete: similar is a judgement, not a proof.</li>
+          <li>Both lanes file proposals with their evidence on the blackboard. Nothing is removed.</li>
+        </ol>
+<pre>[agent] duplicate-finder: start dup.documents
+[agent] duplicate-finder: 2 identical group(s), 1 near-identical  recoverable_mb=0.0</pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/duplicate_agent.py</code>, <code>tools/similarity.py</code></dd><dt>MCP calls</dt><dd>0, it works from the blackboard</dd></dl>
+        <div class="check"><b>Check yourself:</b> identical groups are the invoice and the service agreement; the near-identical pair is the two migration notes.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="photos">
+    <div class="head"><span class="num" style="--tone:var(--agent)">Phase 4 · photos</span><h2>Duplicate photos: 64 bits and three distance bands</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="photos"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li>The photo finder calls <code>image_signature</code>. The server shrinks the image to 9×8 grey pixels.</li>
+          <li>Each pixel is compared with its right-hand neighbour: 64 yes/no answers, the <b>dHash</b>.</li>
+          <li>Two photos are compared by how many of the 64 bits differ.</li>
+          <li><b>0 to 4 bits:</b> the same shot, re-saved or resized. Keep the largest, propose deleting the rest.</li>
+          <li><b>5 to 10 bits:</b> the same scene a moment later. Sent to a human, never to the trash.</li>
+        </ol>
+<pre>[mcp]   photo-finder -> library.image_signature  path=photos/IMG_20190704_beach.jpg
+[agent] photo-finder: 2 duplicate set(s), 1 to review  recoverable_mb=0.02</pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/photo_agent.py</code>, <code>tools/imaging.py</code></dd><dt>MCP calls</dt><dd>8, one per photo</dd></dl>
+        <div class="check"><b>Check yourself:</b> beach and city copies are proposed; the two park frames are held for review.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="merge">
+    <div class="head"><span class="num" style="--tone:var(--agent)">Phase 5 · merge</span><h2>Consolidate: write, read back, verify, then propose</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="merge"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li>Text files with the same subject key are grouped. PDFs and files already proven identical are left out.</li>
+          <li>The consolidator writes one file per subject into <code>curated/</code>, each section headed with its source path, size and date.</li>
+          <li>It <b>reads the new file back</b> through MCP.</li>
+          <li>It verifies the opening of every source appears in it.</li>
+          <li>Only if all sources are found does it propose retiring them. One miss and nothing is proposed.</li>
+        </ol>
+<pre>[mcp]   consolidator -> library.write_text  path=curated/meeting-notes.md
+[mcp]   consolidator -> library.read_text   path=curated/meeting-notes.md
+[agent] consolidator: 2 subject file(s) written, 0 not trusted</pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/consolidator_agent.py</code></dd><dt>MCP calls</dt><dd>4: two writes, two read-backs</dd></dl>
+        <div class="check"><b>Check yourself:</b> <code>curated/meeting-notes.md</code> and <code>curated/migration-notes.md</code> exist after a dry run. They are the only files a dry run adds.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vet">
+    <div class="head"><span class="num" style="--tone:var(--gate)">Phase 6 · vet</span><h2>The policy gate: four checks, then a token</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="vet"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li>Eight proposals arrive from three agents: 6 deletes, 1 merge, 1 review.</li>
+          <li>Each delete must pass four checks: confidence at least 0.90, no protected path, a named survivor, batch of 50 or fewer.</li>
+          <li>Merge and review proposals are held for a human.</li>
+          <li>The approved deletes are hashed into an <b>approval token</b>. Change one path and the token changes.</li>
+          <li>A dry run stops here and writes <code>plan.json</code>.</li>
+        </ol>
+<pre>[orchestrator] phase 6 · policy review
+[orchestrator] plan: 6 delete group(s), 8 file(s), 0.03 MB  token=1c2d0d0a264837fc
+[orchestrator] model review: caution  source=fallback</pre>
+        <dl class="facts"><dt>files</dt><dd><code>core/policy.py</code> (<code>vet</code>, <code>plan_token</code>)</dd><dt>try</dt><dd><code>pytest tests/test_policy.py -v</code></dd></dl>
+        <div class="check"><b>Why "caution":</b> the merged groups carry confidence 0.95, not 1.00, so the review flags them for your eye.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="act">
+    <div class="head"><span class="num" style="--tone:var(--danger)">Phase 7 · act (only with --execute)</span><h2>Execute: token check, move to trash, undo if needed</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="act"></div></div>
+      <div class="card notes">
+        <h3>Steps</h3>
+        <ol>
+          <li><code>--execute</code> turns dry-run off and dispatches <code>delete.execute</code> with the token.</li>
+          <li>The deletion agent asks the policy to <b>authorise</b>: the token must match the plan as it stands now.</li>
+          <li>It re-checks every path for protection and never touches the survivor.</li>
+          <li>It calls <code>move_to_trash</code>. The server has no delete tool to call instead.</li>
+          <li>Each move is written to <code>manifest.jsonl</code>. <code>curator restore</code> reads it and puts everything back.</li>
+        </ol>
+<pre>[policy] authorised 8 file(s) in 6 group(s)
+[mcp]    deletion-agent -> library.move_to_trash  path=downloads/invoice_2019_march (1).txt
+[policy] moved 8 file(s) to trash, refused 0</pre>
+<pre>curator demo --execute
+curator restore --library demo_library   <span class="c"># restored 8 file(s)</span></pre>
+        <dl class="facts"><dt>files</dt><dd><code>agents/deletion_agent.py</code>, <code>library_server.py</code> (<code>move_to_trash</code>)</dd><dt>MCP calls</dt><dd>8</dd></dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="reports">
+    <div class="head"><span class="num" style="--tone:var(--store)">Plate 8 · after the run</span><h2>What a run leaves behind</h2></div>
+    <div class="plate">
+      <div class="card"><div class="viewport" data-scene="reports"></div></div>
+      <div class="card notes">
+        <h3>Read them in this order</h3>
+        <ol>
+          <li><code>report.md</code>: what was found, what is proposed, what was blocked.</li>
+          <li><code>plan.json</code>: every proposal with its evidence and the approval token. Review this before <code>--execute</code>.</li>
+          <li><code>trace.jsonl</code>: every event, in order. The file to open when something surprises you.</li>
+          <li><code>blackboard.json</code>: shared memory and who wrote each entry.</li>
+          <li><code>summary.json</code>: the numbers, for scripts.</li>
+        </ol>
+<pre>cat runs/*/report.md
+grep '"channel": "policy"' runs/*/trace.jsonl</pre>
+        <div class="check"><b>A second run after executing</b> finds 0 files to retire. If it finds more, read the trace before approving.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Practise on it</h2>
+    <div class="grid">
+      <div class="card tile" style="--edge:var(--agent)"><b>Watch</b><p><code>curator demo</code>, then count the <code>year-</code> lines in the trace. Plates 0 and 1.</p></div>
+      <div class="card tile" style="--edge:var(--mcp)"><b>Speak MCP</b><p><code>curator tools --library demo_library</code>, then call <code>hash_item</code> from ten lines of Python. Plate B.</p></div>
+      <div class="card tile" style="--edge:var(--mcp)"><b>Break the sandbox</b><p>Ask <code>read_text</code> for <code>../../etc/passwd</code>. It must fail.</p></div>
+      <div class="card tile" style="--edge:var(--gate)"><b>Tamper with a plan</b><p>Weaken <code>plan_token()</code> and watch <code>test_changed_plan</code> fail. Plate 6.</p></div>
+      <div class="card tile" style="--edge:var(--agent)"><b>Add an agent</b><p>A <code>LargeFileAgent</code> on kind <code>review.large</code>. Register it; nothing else changes.</p></div>
+      <div class="card tile" style="--edge:var(--service)"><b>Add a model</b><p>Set <code>CURATOR_PROVIDER</code> and a key. The delete plan should not change. Plate 2.</p></div>
+    </div>
+    <p class="lead">Full instructions for each are in <code>docs/03-lab-guide.md</code>.</p>
+  </section>
+</div>
+
+<script>
+const V = n => 'var(--' + n + ')';
+/* b: box  [x,y,z,w,d,h,colour,label,sub,class]   a: flat arrow [x1,y1,x2,y2,z,colour,label]   p: vertical pipe [x,y,z,h,colour] */
+const S = {
+  map: [
+    ['b',-300,-120,280,300,90,26,'orch','Orchestrator','owns the plan'], ['b',20,-120,280,280,90,18,'orch','Agent bus','routes by task kind'],
+    ['b',-300,-120,210,90,90,22,'agent','Year × N'], ['b',-198,-120,210,90,90,22,'agent','Document'], ['b',-96,-120,210,90,90,22,'agent','Duplicate'],
+    ['b',6,-120,210,90,90,22,'agent','Photo'], ['b',108,-120,210,90,90,22,'agent','Consolidator'], ['b',210,-120,210,90,90,22,'danger','Deletion'],
+    ['b',-300,-120,140,140,90,20,'service','Blackboard','shared memory'], ['b',-150,-120,140,140,90,30,'gate','Policy gate','vet · token'],
+    ['b',0,-120,140,140,90,20,'service','LLM provider','optional'], ['b',150,-120,140,150,90,20,'mcp','MCP client','one session'],
+    ['b',-300,-120,70,600,90,22,'mcp','MCP server · curator-library','8 tools · JSON-RPC over stdio · sandboxed'],
+    ['b',-300,-120,0,140,90,18,'store','documents/'], ['b',-150,-120,0,140,90,18,'store','photos/'], ['b',0,-120,0,140,90,18,'store','curated/'], ['b',150,-120,0,150,90,18,'store','.curator_trash/'],
+    ['p',222,-20,92,48,'mcp'], ['p',-150,-20,232,48,'orch'], ['p',-150,-20,160,50,'agent'], ['p',222,-20,18,52,'mcp'],
+  ],
+  setup: [
+    ['b',-310,-140,0,620,280,10,'service','Windows host · your PC','', 'base'],
+    ['b',-295,-128,10,450,236,12,'orch','WSL · Ubuntu','', 'base'],
+    ['b',-280,-116,22,330,130,12,'agent','.venv · Python 3.11+','', 'base'],
+    ['b',-268,-104,34,120,70,28,'orch','curator','the CLI you run'],
+    ['b',-100,-104,34,138,70,28,'mcp','MCP server','child process'],
+    ['a',-148,-69,-100,-69,64,'mcp','stdio'],
+    ['b',-280,30,22,150,62,18,'store','~/library','your files'],
+    ['b',-115,30,22,150,62,18,'store','runs/','reports'],
+    ['a',-30,-34,-200,30,42,'mcp','8 tools'],
+    ['b',175,-128,10,120,100,18,'store','Google Drive','mounted at /mnt/g'],
+    ['b',175,10,90,120,80,24,'service','LLM API','optional · cloud'],
+    ['p',233,48,10,80,'service'],
+  ],
+  wiring: [
+    ['b',-310,-135,0,620,270,8,'orch','runtime.py · build_runtime()','', 'base'],
+    ['b',-300,-125,8,600,70,14,'orch','Agent bus','task kind → agent'],
+    ['b',-296,-118,84,78,56,22,'orch','Orchestrator'], ['b',-211,-118,84,78,56,22,'agent','Year','factory'], ['b',-126,-118,84,78,56,22,'agent','Document','factory'],
+    ['b',-41,-118,84,78,56,22,'agent','Duplicate'], ['b',44,-118,84,78,56,22,'agent','Photo'], ['b',129,-118,84,78,56,22,'agent','Consolid.'], ['b',214,-118,84,78,56,22,'danger','Deletion'],
+    ['p',-260,-93,22,62,'orch'], ['p',-175,-93,22,62,'agent'], ['p',-90,-93,22,62,'agent'], ['p',-5,-93,22,62,'agent'], ['p',80,-93,22,62,'agent'], ['p',165,-93,22,62,'agent'], ['p',250,-93,22,62,'danger'],
+    ['b',-300,20,8,112,90,20,'service','Tracer','trace.jsonl'], ['b',-180,20,8,112,90,20,'service','Blackboard'], ['b',-60,20,8,112,90,32,'gate','Policy gate','dry run on'],
+    ['b',60,20,8,112,90,20,'service','LLM','offline'], ['b',180,20,8,116,90,20,'mcp','MCP client'],
+    ['b',150,10,-110,180,110,24,'mcp','MCP server','initialize → tools/list → 8 tools'],
+    ['p',236,62,-86,94,'mcp'],
+  ],
+  scope: [
+    ['b',-300,-70,130,150,90,30,'orch','Orchestrator','phase 0'],
+    ['b',-100,-70,130,130,90,22,'mcp','MCP client'],
+    ['a',-150,-25,-100,-25,152,'orch','call_tool'],
+    ['p',-38,-28,26,104,'mcp'],
+    ['b',-160,-80,0,220,110,26,'mcp','MCP server','list_items'],
+    ['b',95,-135,0,215,270,8,'store','library/ · 18 files','', 'base'],
+    ['a',60,-25,100,-25,14,'mcp',''],
+    ...[0,1,2,3].flatMap(i => Array.from({length:[4,5,5,4][i]}, (_, k) => ['b',105+i*50,-70,8+k*15,42,60,13,'data', k === [4,5,5,4][i]-1 ? String(2019+i) : '', '', 'light'])),
+    ['b',-100,50,130,130,56,14,'data','inventory','18 items · 4 years','light'],
+  ],
+  fanout: [
+    ['b',-75,-125,200,150,70,26,'orch','Orchestrator','4 tasks'],
+    ['p',-3,-90,146,54,'orch'],
+    ['b',-260,-125,130,520,70,16,'orch','Agent bus','gather(concurrency=4)'],
+    ...[0,1,2,3].flatMap(i => [
+      ['b',-260+i*133,-125,60,120,70,26,'agent','year-'+(2019+i),[4,5,5,4][i]+' files'],
+      ['p',-203+i*133,-90,86,44,'agent'], ['p',-203+i*133,-90,20,40,'mcp'],
+      ['b',-260+i*133,20,16,120,56,10,'data',[4,5,5,4][i]+' records','','light'],
+    ]),
+    ['b',-260,-125,0,520,70,20,'mcp','MCP server','hash_item × 18 → sha256'],
+    ['b',-260,10,0,520,80,16,'service','Blackboard','', 'base'],
+  ],
+  read: [
+    ['b',-305,-55,60,100,80,24,'agent','doc agent','per year'],
+    ['a',-205,-15,-178,-15,80,'agent',''],
+    ['b',-175,-55,60,96,80,16,'data','text','from read_text','light'],
+    ['a',-79,-15,-52,-15,80,'agent',''],
+    ['b',-50,-55,60,112,80,22,'agent','subject key','code, always'],
+    ['a',62,-15,90,-15,80,'service','ask'],
+    ['b',92,-55,60,96,80,18,'service','LLM','optional'],
+    ['a',188,-15,214,-15,80,'gate',''],
+    ['b',216,-55,60,90,80,30,'gate','check','2–60 chars'],
+    ['a',6,45,260,45,84,'agent','fallback when the model is absent or wrong'],
+    ['b',-305,-55,-50,226,80,22,'mcp','MCP server','read_text · pypdf for PDFs'],
+    ['p',-258,-18,-28,88,'mcp'],
+    ['b',60,-55,-50,246,80,16,'service','Blackboard','doc_texts · doc_subjects'],
+    ['p',258,-18,-34,94,'service'],
+  ],
+  compare: [
+    ['b',-310,-140,0,620,280,10,'service','Blackboard · records in, proposals out','', 'base'],
+    ['b',-296,-125,10,110,64,13,'data','invoice.txt','2019-03','light'], ['b',-286,-117,25,110,64,13,'data','invoice (1).txt','2019-04','light'],
+    ['a',-170,-90,-142,-90,34,'agent',''],
+    ['b',-140,-125,10,116,70,34,'agent','sha256','same digest'],
+    ['a',-24,-90,6,-90,34,'danger',''],
+    ['b',8,-125,10,128,70,18,'danger','DELETE proposal','confidence 1.00'],
+    ['a',136,-90,166,-90,34,'store','keep'],
+    ['b',168,-125,10,118,70,13,'store','invoice.txt','oldest stays'],
+    ['b',-296,25,10,110,64,13,'data','migration.txt','','light'], ['b',-286,33,25,110,64,13,'data','migration_v2.txt','','light'],
+    ['a',-170,62,-142,62,34,'agent',''],
+    ['b',-140,25,10,116,70,26,'agent','Jaccard','5-word shingles'],
+    ['a',-24,62,6,62,34,'gate','≥ 0.80'],
+    ['b',8,25,10,128,70,16,'gate','MERGE candidate','not a delete'],
+    ['a',136,62,166,62,34,'service',''],
+    ['b',168,25,10,118,70,13,'service','human or phase 5','decides'],
+  ],
+  photos: [
+    ['b',-305,-55,40,96,80,10,'data','photo','any size','light'],
+    ['a',-209,-15,-186,-15,56,'agent',''],
+    ['b',-184,-55,40,96,80,10,'data','9 × 8 grey','72 pixels','light'],
+    ['a',-88,-15,-66,-15,56,'agent','compare neighbours'],
+    ['b',-64,-55,40,100,80,22,'agent','dHash','64 bits'],
+    ['a',36,-15,62,-15,70,'agent','bits that differ'],
+    ['b',64,-100,40,78,170,58,'danger','0–4','same shot: propose delete'],
+    ['b',146,-100,40,78,170,36,'gate','5–10','same scene: a human decides'],
+    ['b',228,-100,40,78,170,14,'service','11+','different photos'],
+    ['b',-305,-55,-50,220,80,22,'mcp','MCP server','image_signature'],
+    ['p',-258,-18,-28,68,'mcp'],
+  ],
+  merge: [
+    ['b',-305,-135,0,610,270,8,'store','library/','', 'base'],
+    ['b',-296,-110,30,110,60,13,'data','meeting_jan.txt','','light'], ['b',-296,-30,30,110,60,13,'data','meeting_feb.txt','','light'],
+    ['a',-186,-80,-158,-52,40,'agent',''], ['a',-186,0,-158,-22,40,'agent',''],
+    ['b',-156,-85,30,124,110,30,'agent','Consolidator','same subject key'],
+    ['a',-32,-70,0,-88,50,'mcp','1 write'],
+    ['b',2,-120,30,124,64,20,'mcp','write_text','curated/meeting-notes.md'],
+    ['a',64,-56,64,-28,50,'mcp',''],
+    ['b',2,-26,30,124,64,20,'mcp','read_text','2 read it back'],
+    ['a',126,6,160,-10,50,'gate','3 verify'],
+    ['b',162,-80,30,116,96,36,'gate','verify','every source present?'],
+    ['a',220,16,220,46,50,'danger','yes'],
+    ['b',162,48,30,116,62,14,'danger','DELETE proposal','sources · 0.95'],
+    ['b',2,60,8,124,56,12,'store','curated/','merged file stays'],
+  ],
+  vet: [
+    ...[0,1,2,3].map(k => ['b',-305,-55,10+k*17,104,90,14,'data',k===3?'8 proposals':'',k===3?'from 3 agents':'','light']),
+    ['a',-201,-10,-176,-10,60,'gate',''],
+    ['b',-174,-95,10,76,170,66,'gate','confidence','≥ 0.90'],
+    ['b',-94,-95,10,76,170,54,'gate','protected?','*.pem, originals/'],
+    ['b',-14,-95,10,76,170,42,'gate','survivor','a file is kept'],
+    ['b',66,-95,10,76,170,30,'gate','batch','≤ 50 files'],
+    ['a',142,-50,176,-50,44,'agent',''],
+    ['b',178,-95,10,118,86,22,'agent','approved','6 groups · 8 files'],
+    ['a',237,-9,237,18,36,'orch','hash'],
+    ['b',178,20,10,118,62,16,'orch','token','1c2d0d0a264837fc'],
+    ['b',-174,92,10,316,42,10,'service','held for a human','1 merge · 1 review'],
+  ],
+  act: [
+    ['b',-305,-110,40,112,64,16,'orch','--execute','token 1c2d0d0a…'],
+    ['a',-193,-78,-162,-62,58,'orch',''],
+    ['b',-160,-95,40,130,100,32,'danger','Deletion agent','acts, never proposes'],
+    ['a',-95,5,-95,36,60,'gate','authorise'],
+    ['b',-160,38,40,130,62,26,'gate','Policy gate','token = plan?'],
+    ['a',-30,-45,8,-45,66,'danger','move_to_trash'],
+    ['b',10,-95,40,130,100,24,'mcp','MCP server','no delete tool'],
+    ['a',140,-60,178,-78,40,'mcp',''],
+    ['b',180,-125,10,112,92,26,'store','.curator_trash/','8 files'],
+    ['b',180,-22,10,112,58,10,'data','manifest.jsonl','original paths','light'],
+    ['b',10,62,10,130,66,16,'store','library/','10 originals + 2 curated'],
+    ['a',180,96,144,96,24,'store','curator restore'],
+  ],
+  reports: [
+    ['b',-310,-110,0,620,220,10,'store','runs/run-<timestamp>/','', 'base'],
+    ['b',-295,-70,10,108,110,50,'agent','report.md','read first'],
+    ['b',-177,-70,10,108,110,40,'gate','plan.json','proposals + token'],
+    ['b',-59,-70,10,108,110,30,'service','trace.jsonl','every event'],
+    ['b',59,-70,10,108,110,22,'service','blackboard.json','who wrote what'],
+    ['b',177,-70,10,108,110,14,'service','summary.json','the numbers'],
+  ],
+};
+const esc = s => String(s).replace(/[&<>]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[ch]));
+function build(view) {
+  const scene = document.createElement('div'); scene.className = 'scene';
+  for (const it of S[view.dataset.scene]) {
+    const el = document.createElement('div');
+    if (it[0] === 'b' || it[0] === 'p') {
+      const [x,y,z,w,d,h,c,label,sub,cls] = it[0] === 'b' ? it.slice(1) : [it[1]-4, it[2]-4, it[3], 8, 8, it[4], it[5], '', '', 'pipe'];
+      el.className = 'block ' + (cls || '');
+      Object.entries({x,y,z,w,d,h}).forEach(([k,v]) => el.style.setProperty('--' + k, v));
+      el.style.setProperty('--c', V(c));
+      el.innerHTML = '<span class="f back"></span><span class="f left"></span><span class="f right"></span><span class="f front"></span><span class="f top">' +
+        esc(label || '') + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>';
+    } else {
+      const [x1,y1,x2,y2,z,c,label] = it.slice(1);
+      el.className = 'arrow';
+      el.style.setProperty('--x', x1); el.style.setProperty('--y', y1); el.style.setProperty('--z', z);
+      el.style.setProperty('--len', Math.hypot(x2-x1, y2-y1)); el.style.setProperty('--ang', Math.atan2(y2-y1, x2-x1) * 180 / Math.PI);
+      el.style.setProperty('--c', V(c));
+      el.innerHTML = '<i></i>' + (label ? '<span>' + esc(label) + '</span>' : '');
+    }
+    scene.appendChild(el);
+  }
+  view.appendChild(scene);
+  const hint = document.createElement('span'); hint.className = 'hint'; hint.textContent = 'drag to turn'; view.appendChild(hint);
+  const fit = () => scene.style.setProperty('--s', Math.min(1.15, view.clientWidth / 540));
+  fit(); window.addEventListener('resize', fit);
+  let down = false, sx = 0, start = -36, rz = -36;
+  view.addEventListener('pointerdown', e => { down = true; sx = e.clientX; start = rz; });
+  window.addEventListener('pointermove', e => { if (!down) return; rz = Math.max(-80, Math.min(-8, start + (e.clientX - sx) * 0.25)); scene.style.setProperty('--rz', rz); });
+  window.addEventListener('pointerup', () => { down = false; });
+}
+document.querySelectorAll('.viewport').forEach(build);
+</script>
+</body>
+</html>

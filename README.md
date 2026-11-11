@@ -77,7 +77,8 @@ Dry run is the default. Agents that find things can only *propose*, with evidenc
 
 ## Learn it
 
-1. [`docs/architecture.html`](docs/architecture.html) — the 3D model and a stepped run
+1. [`docs/visual-guide.html`](docs/visual-guide.html) — the build manual: one 3D diagram per phase
+1. [`docs/architecture.html`](docs/architecture.html) — the whole system as one 3D model you can step through
 2. [`docs/01-concepts.md`](docs/01-concepts.md) — agents, tasks, the blackboard, why no agent chat
 3. [`docs/02-mcp-primer.md`](docs/02-mcp-primer.md) — what MCP is, on the wire, with this server
 4. [`docs/03-lab-guide.md`](docs/03-lab-guide.md) — eight practical labs
