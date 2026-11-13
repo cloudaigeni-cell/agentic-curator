@@ -78,12 +78,13 @@ Dry run is the default. Agents that find things can only *propose*, with evidenc
 ## Learn it
 
 1. [`docs/visual-guide.html`](docs/visual-guide.html) — the build manual: one 3D diagram per phase
-1. [`docs/architecture.html`](docs/architecture.html) — the whole system as one 3D model you can step through
-2. [`docs/01-concepts.md`](docs/01-concepts.md) — agents, tasks, the blackboard, why no agent chat
-3. [`docs/02-mcp-primer.md`](docs/02-mcp-primer.md) — what MCP is, on the wire, with this server
-4. [`docs/03-lab-guide.md`](docs/03-lab-guide.md) — eight practical labs
-5. [`docs/04-wsl-setup.md`](docs/04-wsl-setup.md) — WSL specifics
-6. [`docs/05-google-drive.md`](docs/05-google-drive.md) — pointing the agents at Google Drive
+2. [`docs/architecture.html`](docs/architecture.html) — the whole system as one 3D model you can step through
+3. [`docs/01-concepts.md`](docs/01-concepts.md) — agents, tasks, the blackboard, why no agent chat
+4. [`docs/02-mcp-primer.md`](docs/02-mcp-primer.md) — what MCP is, on the wire, with this server
+5. [`docs/03-lab-guide.md`](docs/03-lab-guide.md) — eight practical labs
+6. [`docs/04-wsl-setup.md`](docs/04-wsl-setup.md) — WSL specifics
+7. [`docs/05-google-drive.md`](docs/05-google-drive.md) — pointing the agents at Google Drive
+8. [`docs/06-field-run.md`](docs/06-field-run.md) — a real Google Takeout run from WSL, problems and fixes
 
 Then read the code in this order: `runtime.py` → `agents/orchestrator.py` → `core/bus.py` → `core/policy.py` → `mcp_layer/`.
 
@@ -101,6 +102,7 @@ src/agentic_curator/
   sample.py         builds the planted demo library
 tests/              tools, policy, end-to-end pipeline
 docs/               3D field guide + written guides
+scripts/run_wsl.sh  one-command dry run from WSL against a Takeout part on D:\
 ```
 
 MIT licensed.
