@@ -4,7 +4,11 @@ A hands-on multi-agent framework in Python: **one orchestrator, six specialised 
 
 It is built to be read. Each file opens with what it teaches, and the demo runs with no API key.
 
-**See the diagrams in your browser** (GitHub shows `.html` files as code, so use these links):
+**How it works, animated:** see [`ARCHITECT_README.md`](ARCHITECT_README.md).
+
+<p align="center"><img src="docs/assets/agentic-workflow.svg" alt="Animated architecture of Agentic Curator" width="100%"></p>
+
+**See the interactive 3D guides in your browser** (GitHub shows `.html` files as code, so use these links):
 
 | Guide | What it shows |
 | --- | --- |

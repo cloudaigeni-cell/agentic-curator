@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f1729"/><stop offset="1" stop-color="#1c2a48"/></linearGradient>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.04"/></pattern>
+<filter id="soft" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity="0.45"/></filter>
+<filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dfe6f5"/></marker>
+</defs>
+<style>
+.t{fill:#0d1424;font-weight:700;text-anchor:middle}
+.s{fill:#0d1424;font-size:12.5px;text-anchor:middle;opacity:.85}
+.lbl{fill:#cfd8ea;font-size:13px;font-style:italic}
+.flow{fill:none;stroke-width:2.6;stroke-dasharray:9 7;animation:run 1.2s linear infinite;opacity:.85}
+.dash{stroke-dasharray:4 6}
+@keyframes run{to{stroke-dashoffset:-32}}
+.num{fill:#0f1729;font-size:13px;font-weight:800;text-anchor:middle}
+.step{fill:#e6ecf8;font-size:14px}
+.h1{fill:#ffffff;font-size:30px;font-weight:800}
+.h2{fill:#9fb0d0;font-size:15px}
+.zone{fill:#ffffff;fill-opacity:.035;stroke:#ffffff;stroke-opacity:.12;stroke-dasharray:6 6}
+.zl{fill:#8fa3c8;font-size:13px;font-weight:700;letter-spacing:2px}
+.pulse{animation:pulse 2.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+<rect width="1600" height="1000" fill="url(#bg)"/><rect width="1600" height="1000" fill="url(#grid)"/>
+<text x="40" y="52" class="h1">Agentic Curator · how one run flows</text>
+<text x="40" y="78" class="h2">Orchestrator plans · subagents work in parallel · every file touch goes through MCP · nothing is deleted without your approval</text>
+<rect x="22" y="300" width="300" height="440" rx="18" class="zone"/><text x="40" y="326" class="zl">CLIENT</text>
+<rect x="430" y="104" width="1150" height="520" rx="18" class="zone"/><text x="448" y="130" class="zl">AGENT LAYER</text>
+<rect x="430" y="640" width="1150" height="340" rx="18" class="zone"/><text x="448" y="666" class="zl">MCP LAYER</text>
+<g transform="translate(70,370)">
+<rect x="-10" y="200" width="230" height="16" rx="4" fill="#3a4a6b"/>
+<rect x="40" y="128" width="130" height="78" rx="6" fill="#26324d" stroke="#7aa2ff" stroke-width="2"/>
+<rect x="22" y="204" width="166" height="8" rx="3" fill="#56688f"/>
+<text x="105" y="160" fill="#9fd1ff" font-size="12" text-anchor="middle" font-family="Consolas,monospace">$ curator run</text>
+<text x="105" y="180" fill="#8fe0a4" font-size="12" text-anchor="middle" font-family="Consolas,monospace" class="pulse">dry-run ✓</text>
+<circle cx="105" cy="34" r="30" fill="#f7b267"/>
+<path d="M45,128 q0,-58 60,-58 q60,0 60,58 z" fill="#d98b3a"/>
+<g class="pulse"><rect x="168" y="-2" width="62" height="50" rx="7" fill="#ffffff"/><rect x="174" y="4" width="50" height="34" rx="3" fill="#6eb2f0"/><circle cx="212" cy="13" r="5" fill="#ffd36e"/><path d="M174,38 l16,-18 l12,12 l8,-8 l14,14 z" fill="#3f9e5c"/></g>
+<text x="105" y="250" fill="#ffffff" font-size="18" font-weight="700" text-anchor="middle">You</text>
+<text x="105" y="270" fill="#9fb0d0" font-size="13" text-anchor="middle">photos · docs · Takeout</text>
+</g>
+<g class="box">
+<polygon points="500,160 516,148 836,148 820,160" fill="#7aa2ff"/>
+<polygon points="820,160 836,148 836,222 820,234" fill="#3a5fc0"/>
+<rect x="500" y="160" width="320" height="74" fill="#4f7ae6" filter="url(#soft)"/>
+<text x="660.0" y="195.0" class="t" font-size="17">Orchestrator</text>
+<text x="660.0" y="215.0" class="s">plans phases · owns no files</text>
+</g>
+<g class="box">
+<polygon points="1000,150 1016,138 1266,138 1250,150" fill="#f5a3d8"/>
+<polygon points="1250,150 1266,138 1266,204 1250,216" fill="#b9579b"/>
+<rect x="1000" y="150" width="250" height="66" fill="#de76bd" filter="url(#soft)"/>
+<text x="1125.0" y="181.0" class="t" font-size="17">LLM provider</text>
+<text x="1125.0" y="201.0" class="s">Anthropic · Gemini · OpenAI · offline</text>
+</g>
+<g class="box">
+<polygon points="1300,150 1316,138 1556,138 1540,150" fill="#c3a6ff"/>
+<polygon points="1540,150 1556,138 1556,204 1540,216" fill="#7d5ac4"/>
+<rect x="1300" y="150" width="240" height="66" fill="#9c7ae6" filter="url(#soft)"/>
+<text x="1420.0" y="181.0" class="t" font-size="17">Blackboard</text>
+<text x="1420.0" y="201.0" class="s">facts · proposals · evidence</text>
+</g>
+<g class="box">
+<polygon points="500,300 516,288 836,288 820,300" fill="#6fd3c4"/>
+<polygon points="820,300 836,288 836,348 820,360" fill="#33907f"/>
+<rect x="500" y="300" width="320" height="60" fill="#45b3a3" filter="url(#soft)"/>
+<text x="660.0" y="328.0" class="t" font-size="17">Agent Bus</text>
+<text x="660.0" y="348.0" class="s">routes tasks · parallel fan-out</text>
+</g>
+<g class="box">
+<polygon points="1300,290 1316,278 1556,278 1540,290" fill="#ff9f9f"/>
+<polygon points="1540,290 1556,278 1556,354 1540,366" fill="#c15050"/>
+<rect x="1300" y="290" width="240" height="76" fill="#e66f6f" filter="url(#soft)"/>
+<text x="1420.0" y="326.0" class="t" font-size="17">Safety Policy</text>
+<text x="1420.0" y="346.0" class="s">dry-run · confidence ≥ 0.90</text>
+</g>
+<g class="box">
+<polygon points="470,450 486,438 646,438 630,450" fill="#8fe0a4"/>
+<polygon points="630,450 646,438 646,504 630,516" fill="#3f9e5c"/>
+<rect x="470" y="450" width="160" height="66" fill="#5cc47a" filter="url(#soft)"/>
+<text x="550.0" y="481.0" class="t" font-size="15">Year agent</text>
+<text x="550.0" y="501.0" class="s">group by year</text>
+</g>
+<g class="box">
+<polygon points="652,450 668,438 828,438 812,450" fill="#8fe0a4"/>
+<polygon points="812,450 828,438 828,504 812,516" fill="#3f9e5c"/>
+<rect x="652" y="450" width="160" height="66" fill="#5cc47a" filter="url(#soft)"/>
+<text x="732.0" y="481.0" class="t" font-size="15">Document agent</text>
+<text x="732.0" y="501.0" class="s">read · classify</text>
+</g>
+<g class="box">
+<polygon points="834,450 850,438 1010,438 994,450" fill="#8fe0a4"/>
+<polygon points="994,450 1010,438 1010,504 994,516" fill="#3f9e5c"/>
+<rect x="834" y="450" width="160" height="66" fill="#5cc47a" filter="url(#soft)"/>
+<text x="914.0" y="481.0" class="t" font-size="15">Duplicate agent</text>
+<text x="914.0" y="501.0" class="s">sha256 · Jaccard</text>
+</g>
+<g class="box">
+<polygon points="1016,450 1032,438 1192,438 1176,450" fill="#8fe0a4"/>
+<polygon points="1176,450 1192,438 1192,504 1176,516" fill="#3f9e5c"/>
+<rect x="1016" y="450" width="160" height="66" fill="#5cc47a" filter="url(#soft)"/>
+<text x="1096.0" y="481.0" class="t" font-size="15">Photo agent</text>
+<text x="1096.0" y="501.0" class="s">dHash · bursts</text>
+</g>
+<g class="box">
+<polygon points="1198,450 1214,438 1374,438 1358,450" fill="#8fe0a4"/>
+<polygon points="1358,450 1374,438 1374,504 1358,516" fill="#3f9e5c"/>
+<rect x="1198" y="450" width="160" height="66" fill="#5cc47a" filter="url(#soft)"/>
+<text x="1278.0" y="481.0" class="t" font-size="15">Consolidator agent</text>
+<text x="1278.0" y="501.0" class="s">merge notes</text>
+</g>
+<g class="box">
+<polygon points="1380,450 1396,438 1556,438 1540,450" fill="#8fe0a4"/>
+<polygon points="1540,450 1556,438 1556,504 1540,516" fill="#3f9e5c"/>
+<rect x="1380" y="450" width="160" height="66" fill="#5cc47a" filter="url(#soft)"/>
+<text x="1460.0" y="481.0" class="t" font-size="15">Deletion agent</text>
+<text x="1460.0" y="501.0" class="s">trash on approval</text>
+</g>
+<g class="box">
+<polygon points="470,700 486,688 1558,688 1542,700" fill="#ffd36e"/>
+<polygon points="1542,700 1558,688 1558,744 1542,756" fill="#c29230"/>
+<rect x="470" y="700" width="1072" height="56" fill="#e6b445" filter="url(#soft)"/>
+<text x="1006.0" y="726.0" class="t" font-size="17">MCP Client  ·  ClientSession</text>
+<text x="1006.0" y="746.0" class="s">one session per run · tools discovered at start</text>
+</g>
+<g class="box">
+<polygon points="470,860 486,848 1186,848 1170,860" fill="#ffb36e"/>
+<polygon points="1170,860 1186,848 1186,918 1170,930" fill="#c06d2c"/>
+<rect x="470" y="860" width="700" height="70" fill="#e68d45" filter="url(#soft)"/>
+<text x="820.0" y="893.0" class="t" font-size="17">MCP Server  ·  library_server</text>
+<text x="820.0" y="913.0" class="s">sandboxed to your library folder</text>
+</g>
+<rect x="476" y="940" width="112" height="26" rx="13" fill="#2b3a5c" stroke="#e68d45"/><text x="532" y="957" fill="#ffd9b8" font-size="11" text-anchor="middle" font-family="Consolas,monospace">list_items</text>
+<rect x="592" y="940" width="112" height="26" rx="13" fill="#2b3a5c" stroke="#e68d45"/><text x="648" y="957" fill="#ffd9b8" font-size="11" text-anchor="middle" font-family="Consolas,monospace">read_text</text>
+<rect x="708" y="940" width="112" height="26" rx="13" fill="#2b3a5c" stroke="#e68d45"/><text x="764" y="957" fill="#ffd9b8" font-size="11" text-anchor="middle" font-family="Consolas,monospace">hash_item</text>
+<rect x="824" y="940" width="112" height="26" rx="13" fill="#2b3a5c" stroke="#e68d45"/><text x="880" y="957" fill="#ffd9b8" font-size="11" text-anchor="middle" font-family="Consolas,monospace">image_signature</text>
+<rect x="940" y="940" width="112" height="26" rx="13" fill="#2b3a5c" stroke="#e68d45"/><text x="996" y="957" fill="#ffd9b8" font-size="11" text-anchor="middle" font-family="Consolas,monospace">write_text</text>
+<rect x="1056" y="940" width="112" height="26" rx="13" fill="#2b3a5c" stroke="#e68d45"/><text x="1112" y="957" fill="#ffd9b8" font-size="11" text-anchor="middle" font-family="Consolas,monospace">move_to_trash</text>
+<path d="M1250,860 v80 a145.0,16 0 0 0 290,0 v-80" fill="#6eb2f0" filter="url(#soft)"/>
+<ellipse cx="1395.0" cy="860" rx="145.0" ry="16" fill="#9fd1ff"/>
+<text x="1395.0" y="904.0" class="t" font-size="17">Your library</text>
+<text x="1395.0" y="924.0" class="s">photos · docs · trash manifest</text>
+<path id="f1" d="M240,520 C300,520 330,240 492,205" class="flow" stroke="#f7b267" marker-end="url(#arr)"/>
+<circle r="6" fill="#f7b267" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="0s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="0s" repeatCount="indefinite" rotate="auto"><mpath href="#f1"/></animateMotion></circle>
+<text x="280" y="262" class="lbl">curator run</text>
+<path id="f2" d="M660,240 L660,292" class="flow" stroke="#7aa2ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#7aa2ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.6s" begin="0.6s" repeatCount="indefinite"/><animateMotion dur="1.6s" begin="0.6s" repeatCount="indefinite" rotate="auto"><mpath href="#f2"/></animateMotion></circle>
+<path id="f30" d="M660,366 C660,410 550.0,400 550.0,442" class="flow" stroke="#6fd3c4" marker-end="url(#arr)"/>
+<circle r="6" fill="#6fd3c4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.0s" begin="1.0s" repeatCount="indefinite"/><animateMotion dur="2.0s" begin="1.0s" repeatCount="indefinite" rotate="auto"><mpath href="#f30"/></animateMotion></circle>
+<path id="f31" d="M660,366 C660,410 732.0,400 732.0,442" class="flow" stroke="#6fd3c4" marker-end="url(#arr)"/>
+<circle r="6" fill="#6fd3c4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.0s" begin="1.15s" repeatCount="indefinite"/><animateMotion dur="2.0s" begin="1.15s" repeatCount="indefinite" rotate="auto"><mpath href="#f31"/></animateMotion></circle>
+<path id="f32" d="M660,366 C660,410 914.0,400 914.0,442" class="flow" stroke="#6fd3c4" marker-end="url(#arr)"/>
+<circle r="6" fill="#6fd3c4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.0s" begin="1.3s" repeatCount="indefinite"/><animateMotion dur="2.0s" begin="1.3s" repeatCount="indefinite" rotate="auto"><mpath href="#f32"/></animateMotion></circle>
+<path id="f33" d="M660,366 C660,410 1096.0,400 1096.0,442" class="flow" stroke="#6fd3c4" marker-end="url(#arr)"/>
+<circle r="6" fill="#6fd3c4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.0s" begin="1.45s" repeatCount="indefinite"/><animateMotion dur="2.0s" begin="1.45s" repeatCount="indefinite" rotate="auto"><mpath href="#f33"/></animateMotion></circle>
+<path id="f34" d="M660,366 C660,410 1278.0,400 1278.0,442" class="flow" stroke="#6fd3c4" marker-end="url(#arr)"/>
+<circle r="6" fill="#6fd3c4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.0s" begin="1.6s" repeatCount="indefinite"/><animateMotion dur="2.0s" begin="1.6s" repeatCount="indefinite" rotate="auto"><mpath href="#f34"/></animateMotion></circle>
+<path id="f35" d="M660,366 C660,410 1460.0,400 1460.0,442" class="flow" stroke="#6fd3c4" marker-end="url(#arr)"/>
+<circle r="6" fill="#6fd3c4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.0s" begin="1.75s" repeatCount="indefinite"/><animateMotion dur="2.0s" begin="1.75s" repeatCount="indefinite" rotate="auto"><mpath href="#f35"/></animateMotion></circle>
+<path id="f40" d="M550.0,522 L550.0,692" class="flow" stroke="#8fe0a4" marker-end="url(#arr)"/>
+<circle r="6" fill="#8fe0a4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.8s" begin="2.0s" repeatCount="indefinite"/><animateMotion dur="1.8s" begin="2.0s" repeatCount="indefinite" rotate="auto"><mpath href="#f40"/></animateMotion></circle>
+<path id="f41" d="M732.0,522 L732.0,692" class="flow" stroke="#8fe0a4" marker-end="url(#arr)"/>
+<circle r="6" fill="#8fe0a4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.8s" begin="2.12s" repeatCount="indefinite"/><animateMotion dur="1.8s" begin="2.12s" repeatCount="indefinite" rotate="auto"><mpath href="#f41"/></animateMotion></circle>
+<path id="f42" d="M914.0,522 L914.0,692" class="flow" stroke="#8fe0a4" marker-end="url(#arr)"/>
+<circle r="6" fill="#8fe0a4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.8s" begin="2.24s" repeatCount="indefinite"/><animateMotion dur="1.8s" begin="2.24s" repeatCount="indefinite" rotate="auto"><mpath href="#f42"/></animateMotion></circle>
+<path id="f43" d="M1096.0,522 L1096.0,692" class="flow" stroke="#8fe0a4" marker-end="url(#arr)"/>
+<circle r="6" fill="#8fe0a4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.8s" begin="2.36s" repeatCount="indefinite"/><animateMotion dur="1.8s" begin="2.36s" repeatCount="indefinite" rotate="auto"><mpath href="#f43"/></animateMotion></circle>
+<path id="f44" d="M1278.0,522 L1278.0,692" class="flow" stroke="#8fe0a4" marker-end="url(#arr)"/>
+<circle r="6" fill="#8fe0a4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.8s" begin="2.48s" repeatCount="indefinite"/><animateMotion dur="1.8s" begin="2.48s" repeatCount="indefinite" rotate="auto"><mpath href="#f44"/></animateMotion></circle>
+<path id="f45" d="M1460.0,522 L1460.0,692" class="flow" stroke="#8fe0a4" marker-end="url(#arr)"/>
+<circle r="6" fill="#8fe0a4" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.8s" begin="2.6s" repeatCount="indefinite"/><animateMotion dur="1.8s" begin="2.6s" repeatCount="indefinite" rotate="auto"><mpath href="#f45"/></animateMotion></circle>
+<path id="f5" d="M820,762 L820,852" class="flow" stroke="#ffd36e" marker-end="url(#arr)"/>
+<circle r="6" fill="#ffd36e" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.4s" begin="3.0s" repeatCount="indefinite"/><animateMotion dur="1.4s" begin="3.0s" repeatCount="indefinite" rotate="auto"><mpath href="#f5"/></animateMotion></circle>
+<text x="832" y="812" class="lbl">stdio · JSON-RPC</text>
+<path id="f5b" d="M760,852 L760,762" class="flow dash" stroke="#ffb36e" marker-end="url(#arr)"/>
+<circle r="6" fill="#ffb36e" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.4s" begin="3.6s" repeatCount="indefinite"/><animateMotion dur="1.4s" begin="3.6s" repeatCount="indefinite" rotate="auto"><mpath href="#f5b"/></animateMotion></circle>
+<text x="650" y="812" class="lbl">results</text>
+<path id="f6" d="M1172,895 L1242,895" class="flow" stroke="#9fd1ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#9fd1ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.2s" begin="3.3s" repeatCount="indefinite"/><animateMotion dur="1.2s" begin="3.3s" repeatCount="indefinite" rotate="auto"><mpath href="#f6"/></animateMotion></circle>
+<path id="f70" d="M550.0,442 L550.0,424 L1576,424 L1576,186 L1560,186" class="flow dash" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="4.2s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="4.2s" repeatCount="indefinite" rotate="auto"><mpath href="#f70"/></animateMotion></circle>
+<path id="f71" d="M732.0,442 L732.0,424 L1576,424 L1576,186 L1560,186" class="flow dash" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="4.4s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="4.4s" repeatCount="indefinite" rotate="auto"><mpath href="#f71"/></animateMotion></circle>
+<path id="f72" d="M914.0,442 L914.0,424 L1576,424 L1576,186 L1560,186" class="flow dash" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="4.6000000000000005s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="4.6000000000000005s" repeatCount="indefinite" rotate="auto"><mpath href="#f72"/></animateMotion></circle>
+<path id="f73" d="M1096.0,442 L1096.0,424 L1576,424 L1576,186 L1560,186" class="flow dash" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="4.800000000000001s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="4.800000000000001s" repeatCount="indefinite" rotate="auto"><mpath href="#f73"/></animateMotion></circle>
+<path id="f74" d="M1278.0,442 L1278.0,424 L1576,424 L1576,186 L1560,186" class="flow dash" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="5.0s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="5.0s" repeatCount="indefinite" rotate="auto"><mpath href="#f74"/></animateMotion></circle>
+<path id="f75" d="M1460.0,442 L1460.0,424 L1576,424 L1576,186 L1560,186" class="flow dash" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.0s" begin="5.2s" repeatCount="indefinite"/><animateMotion dur="3.0s" begin="5.2s" repeatCount="indefinite" rotate="auto"><mpath href="#f75"/></animateMotion></circle>
+<text x="1418" y="414" class="lbl">findings + proposals</text>
+<path id="f8" d="M822,190 L992,184" class="flow" stroke="#f5a3d8" marker-end="url(#arr)"/>
+<circle r="6" fill="#f5a3d8" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.5s" begin="5.0s" repeatCount="indefinite"/><animateMotion dur="1.5s" begin="5.0s" repeatCount="indefinite" rotate="auto"><mpath href="#f8"/></animateMotion></circle>
+<text x="848" y="176" class="lbl">second opinion</text>
+<path id="f9" d="M1420,226 L1420,282" class="flow" stroke="#c3a6ff" marker-end="url(#arr)"/>
+<circle r="6" fill="#c3a6ff" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="1.2s" begin="5.5s" repeatCount="indefinite"/><animateMotion dur="1.2s" begin="5.5s" repeatCount="indefinite" rotate="auto"><mpath href="#f9"/></animateMotion></circle>
+<path id="f10" d="M1300,330 C1280,330 1270,392 1240,392 L462,392 C448,392 448,402 448,412 L448,584 C448,594 442,598 432,598 L300,598 C272,598 262,590 252,580" class="flow" stroke="#ff9f9f" marker-end="url(#arr)"/>
+<circle r="6" fill="#ff9f9f" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="3.6s" begin="6.0s" repeatCount="indefinite"/><animateMotion dur="3.6s" begin="6.0s" repeatCount="indefinite" rotate="auto"><mpath href="#f10"/></animateMotion></circle>
+<text x="520" y="590" class="lbl">plan.json + report → you approve</text>
+<path id="f11" d="M1460.0,522 C1460.0,600 1420,640 1420,852" class="flow dash" stroke="#ff6f6f" marker-end="url(#arr)"/>
+<circle r="6" fill="#ff6f6f" filter="url(#glow)" opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.85;1" dur="2.4s" begin="7.2s" repeatCount="indefinite"/><animateMotion dur="2.4s" begin="7.2s" repeatCount="indefinite" rotate="auto"><mpath href="#f11"/></animateMotion></circle>
+<text x="1290" y="640" class="lbl">approved → move_to_trash</text>
+<rect x="26" y="742" width="390" height="226" rx="14" fill="#0b1222" fill-opacity=".75" stroke="#ffffff" stroke-opacity=".12"/>
+<g><circle cx="46" cy="770" r="13" fill="#ffffff"/><text x="46" y="775" class="num">1</text><text x="66" y="775" class="step">You start a run (dry-run by default)</text></g>
+<g><circle cx="46" cy="796" r="13" fill="#ffffff"/><text x="46" y="801" class="num">2</text><text x="66" y="801" class="step">Orchestrator splits the job into phases</text></g>
+<g><circle cx="46" cy="822" r="13" fill="#ffffff"/><text x="46" y="827" class="num">3</text><text x="66" y="827" class="step">Bus fans tasks out to six subagents</text></g>
+<g><circle cx="46" cy="848" r="13" fill="#ffffff"/><text x="46" y="853" class="num">4</text><text x="66" y="853" class="step">Subagents act only through MCP tools</text></g>
+<g><circle cx="46" cy="874" r="13" fill="#ffffff"/><text x="46" y="879" class="num">5</text><text x="66" y="879" class="step">Server reads, hashes and fingerprints files</text></g>
+<g><circle cx="46" cy="900" r="13" fill="#ffffff"/><text x="46" y="905" class="num">6</text><text x="66" y="905" class="step">Findings land on the Blackboard</text></g>
+<g><circle cx="46" cy="926" r="13" fill="#ffffff"/><text x="46" y="931" class="num">7</text><text x="66" y="931" class="step">Safety Policy builds a plan you approve</text></g>
+<g><circle cx="46" cy="952" r="13" fill="#ffffff"/><text x="46" y="957" class="num">8</text><text x="66" y="957" class="step">Deletion agent trashes – reversible</text></g>
+</svg>
