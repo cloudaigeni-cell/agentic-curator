@@ -4,7 +4,14 @@ A hands-on multi-agent framework in Python: **one orchestrator, six specialised 
 
 It is built to be read. Each file opens with what it teaches, and the demo runs with no API key.
 
-**Open [`docs/architecture.html`](docs/architecture.html) in a browser first** — it is an interactive 3D model of the system that steps through a real run.
+**See the diagrams in your browser** (GitHub shows `.html` files as code, so use these links):
+
+| Guide | What it shows |
+| --- | --- |
+| [**Architecture: 3D field guide**](https://cloudaigeni-cell.github.io/agentic-curator/architecture.html) | The whole system as one interactive 3D model that steps through a real run |
+| [**Visual 3D guide**](https://cloudaigeni-cell.github.io/agentic-curator/visual-guide.html) | The build manual: one 3D diagram per phase |
+
+Offline: clone the repo and open `docs/architecture.html` or `docs/visual-guide.html` directly.
 
 ```
             ┌───────────────────────────┐
@@ -77,8 +84,8 @@ Dry run is the default. Agents that find things can only *propose*, with evidenc
 
 ## Learn it
 
-1. [`docs/visual-guide.html`](docs/visual-guide.html) — the build manual: one 3D diagram per phase
-2. [`docs/architecture.html`](docs/architecture.html) — the whole system as one 3D model you can step through
+1. [`docs/visual-guide.html`](https://cloudaigeni-cell.github.io/agentic-curator/visual-guide.html) — the build manual: one 3D diagram per phase
+2. [`docs/architecture.html`](https://cloudaigeni-cell.github.io/agentic-curator/architecture.html) — the whole system as one 3D model you can step through
 3. [`docs/01-concepts.md`](docs/01-concepts.md) — agents, tasks, the blackboard, why no agent chat
 4. [`docs/02-mcp-primer.md`](docs/02-mcp-primer.md) — what MCP is, on the wire, with this server
 5. [`docs/03-lab-guide.md`](docs/03-lab-guide.md) — eight practical labs
